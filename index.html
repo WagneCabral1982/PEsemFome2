@@ -62,7 +62,15 @@
 
     <label for="nis">NIS:</label>
     <input type="text" id="nis">
-
+  
+  <div class="action-buttons">
+    <button id="getLocationBtn" class="button-blue" class="btn btn-primary">
+        <img src="https://img.icons8.com/windows/32/place-marker.png" alt="place-marker"/> 
+        Usar minha localização
+    </div>
+        <label for="Município">Município:</label>
+    <input type="text" id="Município">
+  <div class="consulta-button">
     <button onclick="consultarAPI()">Consultar</button>
   </div>
 
@@ -80,28 +88,33 @@
       <option>Outro</option>
     </select>
     <label>Data de Nascimento:</label><input type="date">
-    <label>Município (Detectar Localização):</label>
-    <input list="municipios" id="municipio" name="municipio">
-    <datalist id="municipios">
-      <option value="Recife">
-      <option value="Olinda">
-      <option value="Jaboatão dos Guararapes">
-      <option value="Cabo de Santo Agostinho">
-      <option value="Paulista">
-      <option value="Caruaru">
-      <option value="Garanhuns">
-      <option value="Petrolina">
-      <option value="Arcoverde">
-      <option value="Palmares">
-      <option value="Gravatá">
-      <option value="Vitória de Santo Antão">
-      <option value="Goiana">
-      <option value="Igarassu">
-      <option value="Afogados da Ingazeira">
-      <option value="Salgueiro">
-      <option value="Serra Talhada">
-      <option value="Pesqueira">
-    </datalist>
+   <button type="button" onclick="detectarLocalizacao()" class="button-blue" style="margin-top:10px;">
+  📍 Usar minha localização
+</button>
+<label for="municipio">Município:</label>
+<input list="municipios" id="municipio" name="municipio" placeholder="Digite ou selecione um município">
+
+<datalist id="municipios">
+  <option value="Recife">
+  <option value="Olinda">
+  <option value="Jaboatão dos Guararapes">
+  <option value="Cabo de Santo Agostinho">
+  <option value="Paulista">
+  <option value="Caruaru">
+  <option value="Garanhuns">
+  <option value="Petrolina">
+  <option value="Arcoverde">
+  <option value="Palmares">
+  <option value="Gravatá">
+  <option value="Vitória de Santo Antão">
+  <option value="Goiana">
+  <option value="Igarassu">
+  <option value="Afogados da Ingazeira">
+  <option value="Salgueiro">
+  <option value="Serra Talhada">
+  <option value="Pesqueira">
+</datalist>
+
     <label>Endereço:</label><input type="text">
     <label>Situação de Rua?</label>
     <div class="radio-group">
