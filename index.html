@@ -89,7 +89,7 @@
   <small>Agente público ou técnico da rede de assistência social.</small>
 </div>
 
-    <h2>Fale mais sobre você?/Fale mais sobre <q></q>uem você está ajudando?</h2>
+    <h2>Fale mais sobre você?/Fale mais sobre quem você está ajudando?</h2>
 
 
     <label>Nome:</label><input type="text">
@@ -153,20 +153,26 @@
       const nis = document.getElementById('nis').value;
       const mensagemDiv = document.getElementById('mensagem');
 
-      if (cpf || nis) {
-        mensagemDiv.innerHTML = `<p><strong>Você tem direito ao programa Mães de Pernambuco.</strong><br>
-        Consta uma pendência no seu cadastro. Procure o CRAS mais próximo para regularizar sua situação.<br>
-        [Nome do CREAS], [Endereço]<br><br>
-        📍 Cozinha Comunitária mais próxima: [Nome da Cozinha], [Endereço]</p>`;
-        mensagemDiv.classList.remove('hidden');
-        document.getElementById('formulario').classList.add('hidden');
-      } else {
-        document.getElementById('formulario').classList.remove('hidden');
-        mensagemDiv.classList.add('hidden');
-      }
-    }
+if (cpf || nis) {
+  mensagemDiv.innerHTML = `
+    <p><strong>Essas são as cozinhas comunitárias* mais próximas à sua localização.</strong></p>
+    <p>[Nome da Cozinha], [Endereço]</p>
 
-    function salvarFormulario() {
+    <p><strong>Vá também ao CRAS** mais próximo para realizar o seu acompanhamento na rede de Assistência Social.</strong></p>
+    <p>[Nome do CRAS], [Endereço]</p>
+
+    <p><small>* Cozinhas Comunitárias são espaços públicos onde são preparadas e oferecidas refeições saudáveis, de graça ou a baixo custo, para pessoas em situação de vulnerabilidade social e insegurança alimentar.</small></p>
+    <p><small>** CRAS (Centro de Referência da Assistência Social) é uma unidade pública no seu município que atua como a principal porta de entrada para a proteção social básica, prevenindo situações de risco por meio de ações socioassistenciais e do fortalecimento de vínculos familiares e comunitários.</small></p>
+  `;
+
+  mensagemDiv.classList.remove('hidden');
+  document.getElementById('formulario').classList.add('hidden');
+} else {
+  document.getElementById('formulario').classList.remove('hidden');
+  mensagemDiv.classList.add('hidden');
+}
+
+      function salvarFormulario() {
       const radios = document.getElementsByName('situacaoRua');
       let situacao = '';
       for (const radio of radios) {
@@ -180,9 +186,29 @@
       let texto = 'Consulta realizada com sucesso.<br>📍 Cozinha Comunitária mais próxima: [Nome da Cozinha] [Endereço]<br>';
 
       if (situacao === 'sim') {
-        texto += '📍 CREAS mais próximo: [Nome do CREAS], [Endereço]';
+        texto += '📍 Essas são as cozinhas comunitárias* mais próximas à sua localização. 
+ 
+[Nome da Cozinha] [Endereço]
+ 
+Para lhe incluir na rede de Assistência Social vá também ao CREAS** mais próximo para realizar o seu acompanhamento.
+ 
+[Nome do CREAS], [Endereço]
+ 
+* Cozinhas Comunitárias são espaços públicos onde são preparadas e oferecidas refeições saudáveis, de graça ou a baixo custo, para pessoas em situação de vulnerabilidade social e insegurança alimentar.
+** CREAS (Centro de Referência Especializado de Assistência Social) é uma unidade pública responsável por ofertar e referenciar serviços especializados de caráter continuado para famílias e indivíduos em situação de risco pessoal ou social por violação de direitos.
+';
       } else if (situacao === 'nao') {
-        texto += '📍 CRAS mais próximo: [Nome do CRAS], [Endereço]';
+        texto += '📍 Essas são as cozinhas comunitárias* mais próximas à sua localização. 
+
+[Nome da Cozinha], [Endereço]
+        
+Para lhe incluir na rede de Assistência Social vá também ao CRAS** mais próximo para realizar o seu acompanhamento.
+
+  [Nome do CRAS], [Endereço]
+  
+* Cozinhas Comunitárias são espaços públicos onde são preparadas e oferecidas refeições saudáveis, de graça ou a baixo custo, para pessoas em situação de vulnerabilidade social e insegurança alimentar.
+** CRAS (Centro de Referência da Assistência Social) é uma unidade pública no seu município que atua como a principal porta de entrada para a proteção social básica, prevenindo situações de risco por meio de ações socioassistenciais e do fortalecimento de vínculos familiares e comunitários. 
+';
       } else {
         texto = 'Por favor, selecione a Situação de Rua.';
       }
