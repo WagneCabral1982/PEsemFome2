@@ -108,7 +108,7 @@
       <fieldset>
         <legend>Fale mais sobre você</legend>
 
-        <label for="nome1">Nome:</label><input id="nome1" type="text">
+        <label for="nome1">Nome:*</label><input id="nome1" type="text">
         <label for="social1">Nome Social:</label><input id="social1" type="text">
         <label for="genero1">Gênero:</label>
         <select id="genero1">
@@ -121,7 +121,7 @@
 
         <button type="button" class="button-blue" style="margin-top:10px;">📍 Usar minha localização</button>
 
-        <label for="municipio1">Município:</label>
+        <label for="municipio1">Município:*</label>
         <input list="municipios" id="municipio1" name="municipio1" placeholder="Digite ou selecione um município">
         <datalist id="municipios">
           <option value="Recife"><option value="Olinda"><option value="Caruaru">
@@ -146,7 +146,7 @@
       <fieldset>
         <legend>Você está ajudando como:</legend>
         <div class="radio-group">
-          <label><input type="radio" name="tipoPerfil" value="cidadao_amigo"> Cidadão Amigo</label>
+          <label><input type="radio" name="tipoPerfil" value="cidadao_amigo"> Cidadão Amigo</label> 
           <label><input type="radio" name="tipoPerfil" value="profissional"> Profissional</label>
         </div>
       </fieldset>
@@ -154,7 +154,7 @@
       <fieldset>
         <legend>Fale mais sobre quem você está ajudando</legend>
 
-        <label for="nome2">Nome:</label><input id="nome2" type="text">
+        <label for="nome2">Nome:*</label><input id="nome2" type="text">
         <label for="social2">Nome Social:</label><input id="social2" type="text">
         <label for="genero2">Gênero:</label>
         <select id="genero2">
@@ -167,7 +167,7 @@
 
         <button type="button" class="button-blue" style="margin-top:10px;">📍 Usar minha localização</button>
 
-        <label for="municipio2">Município:</label>
+        <label for="municipio2">Município:*</label>
         <input list="municipios" id="municipio2" name="municipio2" placeholder="Digite ou selecione um município">
 
         <label for="endereco2">Endereço:</label><input type="text" id="endereco2">
@@ -206,10 +206,10 @@
       if (cpf || nis) {
         mensagemDiv.innerHTML = `
          <p><strong>Essas são as cozinhas comunitárias* mais próximas à sua localização.</strong></p>
-          <p>[Nome da Cozinha], [Endereço]</p>
+          <p> 📍Cozinha Comunitária: Gurupé Telefone: (81) 99362-9916 Profissional Responsável: Nivea Gouveia Endereço: Rua Gurupé nº 253, Afogados, Recife - PE, CEP: 50.830-170</p>
 
           <p><strong>Vá também ao CRAS** mais próximo para realizar o seu acompanhamento na rede de Assistência Social.</strong></p>
-          <p>[Nome do CRAS], [Endereço]</p>
+          <p> 📍CRAS - BONGI Av. Gen San Martin, nº 1083  – Jiquiá Fone: 3225.9440/9446 E-mail: crasbongi@gmail.com (Compaz Escritor Ariano Suassuna - Cordeiro) </p>
 
           <p><small>* Cozinhas Comunitárias são espaços públicos onde são preparadas e oferecidas refeições saudáveis, de graça ou a baixo custo.</small></p>
           <p><small>** CRAS é a principal porta de entrada para a proteção social básica.</small></p>
@@ -229,46 +229,80 @@
       document.getElementById('formulario-alguem')?.classList.add('hidden');
     }
 
-    function salvarFormulario() {
-      const radios = document.querySelectorAll('input[name="situacaoRua"]:checked');
-      const situacao = radios.length ? radios[0].value : '';
-      const mensagemDiv = document.getElementById('mensagem');
-      let texto = '';
+function salvarFormulario() {
+  let nome = perfilSelecionado === 'mim' ? document.getElementById('nome1') : document.getElementById('nome2');
+  let municipio = perfilSelecionado === 'mim' ? document.getElementById('municipio1') : document.getElementById('municipio2');
 
-      if (situacao === 'sim') {
-        texto = `
-         <strong>Essas são as cozinhas comunitárias* mais próximas à sua localização.</strong><br><br>
-      
-      📍 Cozinha Comunitária mais próxima: [Nome da Cozinha] [Endereço]<br>
-      
+  if (!document.getElementById('erro-nome')) {
+    nome.insertAdjacentHTML('afterend', '<small id="erro-nome" style="color:red; display:none;">Campo obrigatório</small>');
+  }
+  if (!document.getElementById('erro-municipio')) {
+    municipio.insertAdjacentHTML('afterend', '<small id="erro-municipio" style="color:red; display:none;">Campo obrigatório</small>');
+  }
+
+  const erroNome = document.getElementById('erro-nome');
+  const erroMunicipio = document.getElementById('erro-municipio');
+  let valido = true;
+
+  if (!nome.value.trim()) {
+    nome.style.border = "2px solid red";
+    erroNome.style.display = "block";
+    valido = false;
+  } else {
+    nome.style.border = "";
+    erroNome.style.display = "none";
+  }
+
+  if (!municipio.value.trim()) {
+    municipio.style.border = "2px solid red";
+    erroMunicipio.style.display = "block";
+    valido = false;
+  } else {
+    municipio.style.border = "";
+    erroMunicipio.style.display = "none";
+  }
+
+  if (!valido) return;
+
+  const radios = document.querySelectorAll('input[name="situacaoRua"]:checked');
+  const situacao = radios.length ? radios[0].value : '';
+  const mensagemDiv = document.getElementById('mensagem');
+  let texto = '';
+
+  if (situacao === 'sim') {
+    texto = `
+      <strong>Essas são as cozinhas comunitárias* mais próximas à sua localização.</strong><br><br>
+      📍 Cozinha Comunitária: Gurupé Telefone: (81) 99362-9916 Profissional Responsável: Nivea Gouveia Endereço: Rua Gurupé nº 253, Afogados, Recife - PE, CEP: 50.830-170<br><br>
       Para lhe incluir na rede de Assistência Social vá também ao CREAS** mais próximo para realizar o seu acompanhamento.<br><br>
+      📍 CREAS AFOGADOS
 
-      📍 CREAS mais próximo: [Nome do CREAS], [Endereço]<br><br>
+End.: Rua 21 de Abril, nº 1092 - Afogados
 
+Fone: 3355.3671 / 3355.3673
+
+E-mail: creasafogados@recife.pe.gov.br
+
+Horário de Funcionamento: 2ª a 6ª feira, das 8h às 17h <br><br>
       <small>* Cozinhas Comunitárias são espaços públicos onde são preparadas e oferecidas refeições saudáveis, de graça ou a baixo custo, para pessoas em situação de vulnerabilidade social e insegurança alimentar.</small><br>
       <small>** CREAS (Centro de Referência Especializado de Assistência Social) é uma unidade pública responsável por ofertar e referenciar serviços especializados de caráter continuado para famílias e indivíduos em situação de risco pessoal ou social por violação de direitos.</small>
     `;
-      } else if (situacao === 'nao') {
-        texto = `
-           <strong>Essas são as cozinhas comunitárias* mais próximas à sua localização.</strong><br><br>
-
-    📍 Cozinha Comunitária mais próxima: [Nome da Cozinha], [Endereço]<br>
-
+  } else if (situacao === 'nao') {
+    texto = `
+      <strong>Essas são as cozinhas comunitárias* mais próximas à sua localização.</strong><br><br>
+      📍 Cozinha Comunitária mais próxima: Cozinha Comunitária: Gurupé Telefone: (81) 99362-9916 Profissional Responsável: Nivea Gouveia Endereço: Rua Gurupé nº 253, Afogados, Recife - PE, CEP: 50.830-170<br><br>
       Para lhe incluir na rede de Assistência Social vá também ao CRAS** mais próximo para realizar o seu acompanhamento.<br><br>
-
-      📍 CRAS mais próximo: [Nome do CRAS], [Endereço]<br><br>
-
+      📍 CRAS mais próximo: CRAS - BONGI Av. Gen San Martin, nº 1083  – Jiquiá Fone: 3225.9440/9446 E-mail: crasbongi@gmail.com (Compaz Escritor Ariano Suassuna - Cordeiro)<br><br>
       <small>* Cozinhas Comunitárias são espaços públicas onde são preparadas e oferecidas refeições saudáveis.</small><br>
       <small>** CRAS (Centro de Referência da Assistência Social) é uma unidade pública no seu município que atua como a principal porta de entrada para a proteção social básica.</small>
     `;
-      } else {
-        texto = 'Por favor, selecione a Situação de Rua.';
-      }
+  } else {
+    texto = 'Por favor, selecione a Situação de Rua.';
+  }
 
-      mensagemDiv.innerHTML = `<p>${texto}</p>`;
-      mensagemDiv.classList.remove('hidden');
-      esconderFormularios();
-    }
+  mensagemDiv.innerHTML = `<p>${texto}</p>`;
+  mensagemDiv.classList.remove('hidden');
+  esconderFormularios();
+}
 
     function cancelarFormulario() {
       esconderFormularios();
@@ -277,4 +311,3 @@
   </script>
 </body>
 </html>
-
