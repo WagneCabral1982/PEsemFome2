@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Protótipo Wireflow</title>
+  <title>Protótipo Wareflow</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f4f4; }
     .card-container { display: flex; gap: 20px; margin-bottom: 20px; justify-content: center; align-items: center; flex-direction: column; }
@@ -76,8 +76,22 @@
 
   <div id="mensagem" class="mensagem-section hidden"></div>
 
+
   <div id="formulario" class="form-section hidden">
-    <h2>Fale mais sobre você</h2>
+
+<h2>Você está ajudando como:</h2>
+<p>Selecione a opção que melhor representa você:</p>
+<div class="radio-group">
+  <label><input type="radio" name="tipoPerfil" value="cidadao_amigo"> Cidadão Amigo</label><br>
+  <small>Qualquer pessoa que deseja ajudar alguém próximo.</small><br>
+
+  <label><input type="radio" name="tipoPerfil" value="profissional"> Profissional</label><br>
+  <small>Agente público ou técnico da rede de assistência social.</small>
+</div>
+
+    <h2>Fale mais sobre você?/Fale mais sobre <q></q>uem você está ajudando?</h2>
+
+
     <label>Nome:</label><input type="text">
     <label>Nome Social:</label><input type="text">
     <label>Gênero:</label>
