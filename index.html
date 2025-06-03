@@ -345,14 +345,14 @@
         <fieldset>
           <legend>Fale mais sobre quem você está ajudando</legend>
 
-          <label for="nome2" class="required">Nome:</label>
+          <label for="nome2" class="required">Nome completo de quem você está ajudando:</label>
           <input id="nome2" type="text" required>
           <div id="erro-nome2" class="error-message">Campo obrigatório</div>
 
-          <label for="social2">Nome Social:</label>
+          <label for="social2">Nome Social de quem você está ajudando:</label>
           <input id="social2" type="text">
 
-          <label for="genero2">Gênero:</label>
+          <label for="genero2">Gênero de quem você está ajudando:</label>
           <select id="genero2">
             <option value="">Selecione</option>
             <option>Masculino</option>
@@ -360,22 +360,27 @@
             <option>Outro</option>
           </select>
 
-          <label for="nasc2">Data de Nascimento:</label>
+          <label for="nasc2">Data de Nascimento de quem você está ajudando:</label>
           <input type="date" id="nasc2">
 
           <button type="button" class="button-blue" style="margin-top:15px;" onclick="getLocation()">📍 Usar minha localização</button>
 
-          <label for="municipio2" class="required">Município:</label>
+          <label for="municipio2" class="required">Município de quem você está ajudando:</label>
           <input list="municipios" id="municipio2" name="municipio2" placeholder="Digite ou selecione um município" required>
           <div id="erro-municipio2" class="error-message">Campo obrigatório</div>
 
-          <label for="endereco2">Endereço:</label>
+          <label for="endereco2">Endereço de quem você está ajudando:</label>
           <input type="text" id="endereco2">
 
           <label>Situação de Rua?</label>
           <div class="radio-group">
             <label><input type="radio" name="situacaoRua2" value="sim" required> Sim</label>
             <label><input type="radio" name="situacaoRua2" value="nao"> Não</label>
+          </div>
+          <label>Você é brasileiro?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="VoceBrasileiro2" value="sim" required> Sim</label>
+            <label><input type="radio" name="Vocebrasileiro2" value="nao"> Não</label>
           </div>
         </fieldset>
 
