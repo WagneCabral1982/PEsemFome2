@@ -456,15 +456,16 @@
       if (cpf || nis) {
         // Simulação de resposta da API quando há CPF ou NIS
         mensagemDiv.innerHTML = `
-          <p><strong>Essas são as cozinhas comunitárias* mais próximas à sua localização.</strong></p>
-          <p>📍 Cozinha Comunitária: Gurupé<br>Telefone: (81) 99362-9916<br>Profissional Responsável: Nivea Gouveia<br>Endereço: Rua Gurupé nº 253, Afogados, Recife - PE, CEP: 50.830-170</p>
-
-          <p><strong>Vá também ao CRAS** mais próximo para realizar o seu acompanhamento na rede de Assistência Social.</strong></p>
+          
+          <p><strong>Vá também ao CRAS* mais próximo para realizar o seu acompanhamento na rede de Assistência Social.</strong></p>
           <p>📍 CRAS - BONGI<br>Av. Gen San Martin, nº 1083 – Jiquiá<br>Fone: 3225.9440/9446<br>E-mail: crasbongi@gmail.com<br>(Compaz Escritor Ariano Suassuna - Cordeiro)</p>
 
-          <p><small>* Cozinhas Comunitárias são espaços públicos onde são preparadas e oferecidas refeições saudáveis, de graça ou a baixo custo.</small></p>
-          <p><small>** CRAS é a principal porta de entrada para a proteção social básica.</small></p>
-        `;
+          <p><strong>Essas são as cozinhas comunitárias** mais próximas à sua localização.</strong></p>
+          <p>📍 Cozinha Comunitária: Gurupé<br>Telefone: (81) 99362-9916<br>Profissional Responsável: Nivea Gouveia<br>Endereço: Rua Gurupé nº 253, Afogados, Recife - PE, CEP: 50.830-170</p>
+
+          <p><small>* CRAS é a principal porta de entrada para a proteção social básica.</small></p>
+          <p><small>** Cozinhas Comunitárias são espaços públicos onde são preparadas e oferecidas refeições saudáveis, de graça ou a baixo custo.</small></p>
+           `;
         mensagemDiv.classList.remove('hidden');
       } else {
         // Se não há CPF ou NIS, mostrar o formulário apropriado
