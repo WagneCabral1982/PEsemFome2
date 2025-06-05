@@ -303,11 +303,10 @@
     <div id="avisoPrivacidadeModal" class="modal hidden">
       <div class="modal-content">
         <h2>AVISO DE PRIVACIDADE</h2>
-        <p class="privacy-notice-subtitle">Aviso de Privacidade</p>
         <p>A SECRETARIA DE ASSISTÊNCIA SOCIAL, COMBATE À FOME E POLÍTICAS SOBRE DROGAS (SAS) de Pernambuco, no âmbito do programa "PE sem Fome", está adotando todas as medidas de segurança necessárias, incluindo a devida adaptação às normativas internas para o pleno atendimento da legislação vigente no que concerne à Lei Geral de Proteção de Dados (LGPD) – Lei nº 13.709/2018.</p>
         <div class="modal-buttons-docs">
-          <button type="button" class="button-blue" onclick="abrirPdf('politica_privacidade.pdf')">Política de Privacidade</button>
-          <button type="button" class="button-blue" onclick="abrirPdf('termo_uso.pdf')">Termo de Uso</button>
+          <button type="button" class="button-blue" onclick="abrirPdf('https://resourceitsolutions.sharepoint.com/:b:/r/sites/ATI-ProjetoCidadoAmigo/Documentos%20Compartilhados/ATI%20-%20Projeto%20Pernambuco%20sem%20Fome/Levantamento%20de%20Requisitos/LGPD_POL%C3%8DTICA%20DE%20PRIVACIDADE.pdf?csf=1&web=1&e=mWMJ1m')">Política de Privacidade</button>
+          <button type="button" class="button-blue" onclick="abrirPdf('https://resourceitsolutions.sharepoint.com/:b:/r/sites/ATI-ProjetoCidadoAmigo/Documentos%20Compartilhados/ATI%20-%20Projeto%20Pernambuco%20sem%20Fome/Levantamento%20de%20Requisitos/LGPD_TERMO%20DE%20USO.pdf?csf=1&web=1&e=EcAAT4')">Termo de Uso</button>
         </div>
         <div class="button-group">
           <button type="button" class="button-blue" onclick="mostrarPopupConfirmacao()">Continuar <span class="arrow">&#8594;</span></button>
@@ -504,9 +503,8 @@
     }
 
     function abrirPdf(url) {
-      // ATENÇÃO: Substitua 'politica_privacidade.pdf' e 'termo_uso.pdf' pelos caminhos/URLs corretos dos seus arquivos PDF.
-      // Exemplo: window.open('https://seusite.com/docs/' + url, '_blank');
-      // Por enquanto, abrirá um link relativo se os PDFs estiverem na mesma pasta.
+      // Certifique-se de que os arquivos PDF estejam no mesmo diretório do arquivo HTML,
+      // ou forneça o caminho completo para eles.
       window.open(url, '_blank');
     }
 
@@ -702,11 +700,6 @@
       // Limpar campos dos formulários se necessário
       // Ex: document.getElementById('formMim').reset(); document.getElementById('formAlguem').reset();
     }
-
-    // Ajuste nos IDs das divs de erro para os formulários.
-    // Ex: id="erro-nome" para id="erro-nome1" no formMim
-    // E id="erro-municipio" para id="erro-municipio1"
-    // Isso foi feito no HTML e referenciado corretamente no JS.
   </script>
 </body>
 </html>
