@@ -160,17 +160,24 @@
       font-size: 18px;
       text-align: center;
     }
-     .modal-buttons-docs {
+    .modal-buttons-docs {
       display: flex;
       gap: 15px;
       margin: 20px 0;
       justify-content: center;
     }
     .aceite-termos-popup {
+      margin: 25px 0;
+    }
+    .checkbox-option {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin: 25px 0;
+      margin-bottom: 15px;
+    }
+    .checkbox-option input[type="checkbox"] {
+      width: auto;
+      margin-top: 0;
     }
     .warning-block {
       background-color: #fff3cd;
@@ -240,7 +247,7 @@
     <div id="avisoPrivacidadeModal" class="modal hidden">
       <div class="modal-content">
         <h2>AVISO DE PRIVACIDADE</h2>
-        <p id="modalPrivacyText">A SECRETARIA DE ASSISTÊNCIA SOCIAL, COMBATE À FOME E POLÍTICAS SOBRE DROGAS (SAS) de Pernambuco, no âmbito do programa "PE sem Fome", está adotando todas as medidas de segurança necessárias, incluindo a devida adaptação às normativas internas para o pleno atendimento da legislação vigente no que concerne à Lei Geral de Proteção de Dados (LGPD) – Lei nº 13.709/2018.</p>
+        <p id="modalPrivacyText">A SECRETARIA DE ASSISTÊNCIA SOCIAL, COMBATE À FOME E POLÍTICAS SOBRE DROGAS (SAS) de Pernambuco, no âmbito do programa "PE sem Fome", está adotando todas as medidas de segurança necessárias...</p>
         <button id="readAloudBtn" class="button-blue" style="background-color: #6c757d; margin-top: 10px;">🔊 Ouvir o texto</button>
         <div class="modal-buttons-docs">
           <button type="button" class="button-blue" onclick="abrirPdf('https://github.com/WagneCabral1982/PEsemFome2/blob/main/LGPD_POL%C3%8DTICA%20DE%20PRIVACIDADE.pdf')">Política de Privacidade</button>
@@ -252,13 +259,19 @@
         </div>
       </div>
     </div>
-
+    
     <div id="confirmacaoModal" class="modal hidden">
       <div class="modal-content">
-        <p>Conforme os termos acima li e estou ciente.</p>
+        <p>Conforme o Termo de Uso e a Política de Privacidade disponibilizados neste site, DECLARO que:</p>
         <div class="aceite-termos-popup">
-          <input type="checkbox" id="checkboxConfirmacao">
-          <label for="checkboxConfirmacao">Li e concordo com os termos acima</label>
+          <div class="checkbox-option">
+            <input type="checkbox" id="checkboxConcordo" name="declaracao" value="concordo">
+            <label for="checkboxConcordo">Li e concordo com os Termo e Política apresentado.</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" id="checkboxCiente" name="declaracao" value="ciente_nao_concordo">
+            <label for="checkboxCiente">Li e estou ciente das condições, mas não concordo com os termos.</label>
+          </div>
         </div>
         <div class="button-group">
           <button type="button" class="button-blue" onclick="prosseguirParaConsulta()">OK</button>
@@ -361,10 +374,8 @@
         </div>
       </form>
     </section>
-
   </main>
-
-  <script>
+<script>
     let perfilSelecionado = '';
     const mensagemDiv = document.getElementById('mensagem');
     const todosOsPaineis = ['avisoPrivacidadeModal', 'confirmacaoModal', 'consulta', 'mensagem', 'formulario-mim', 'formulario-alguem'];
@@ -383,10 +394,23 @@
       document.getElementById('confirmacaoModal').classList.add('hidden');
       document.getElementById('avisoPrivacidadeModal').classList.remove('hidden');
     }
+  function prosseguirParaConsulta() {
+      // Pega os elementos dos checkboxes
+      const checkboxConcordo = document.getElementById('checkboxConcordo');
+      const checkboxCiente = document.getElementById('checkboxCiente');
 
-    function prosseguirParaConsulta() {
-      const aceitou = document.getElementById('checkboxConfirmacao').checked;
-      console.log(`Log de consentimento: O usuário marcou a caixa de aceite? ${aceitou}`);
+      // Regra de Negócio: O usuário pode prosseguir mesmo sem marcar.
+      // Apenas registramos a escolha para fins de log.
+      let logMessage = 'O usuário prosseguiu sem marcar nenhuma opção.';
+      if (checkboxConcordo.checked) {
+        logMessage = 'Log de consentimento: O usuário marcou "Li e concordo".';
+      } else if (checkboxCiente.checked) {
+        logMessage = 'Log de consentimento: O usuário marcou "Li e estou ciente, mas não concordo".';
+      }
+      
+      console.log(logMessage); // Registra a escolha no console
+
+      // Continua o fluxo
       document.getElementById('confirmacaoModal').classList.add('hidden');
       document.getElementById('consulta').classList.remove('hidden');
     }
@@ -400,6 +424,9 @@
     function abrirPdf(url) {
         window.open(url, '_blank');
     }
+    
+    // --- Restante do seu JavaScript (consultarAPI, salvarFormulario, etc.) ---
+    // (O restante do script permanece o mesmo do código anterior)
 
     function consultarAPI() {
         const cpf = document.getElementById('cpf').value;
@@ -454,7 +481,6 @@
         htmlResult += criarCardServico(servicoCozinha);
         htmlResult += getDefinicaoServicoUnicaVez(servicoCozinha.tipo, definicoesMostradas);
 
-        // Adiciona o botão Fechar
         htmlResult += `<div class="button-group" style="margin-top: 20px;"><button type="button" class="button-red" onclick="cancelarFormulario()">Fechar</button></div>`;
 
         mensagemDiv.innerHTML = htmlResult;
@@ -487,7 +513,6 @@
             htmlResult += getDefinicaoServicoUnicaVez(servico.tipo, definicoesMostradas);
         });
         
-        // Adiciona o botão Fechar
         htmlResult += `<div class="button-group" style="margin-top: 20px;"><button type="button" class="button-red" onclick="cancelarFormulario()">Fechar</button></div>`;
 
         mensagemDiv.innerHTML = htmlResult;
