@@ -80,16 +80,16 @@
     <h2 style="margin:0 0 12px;font-size:22px;font-weight:700">Selecione para quem a ajuda está destinada</h2>
 
     <div class="cards" role="list">
-      <button class="card" onclick="abrirFormulario('mim')" role="listitem" aria-label="Abrir Consulta para mim">
+      <button class="card" onclick="abrirFormulario('mim')" role="listitem" aria-label="Abrir formulário para mim">
         <div class="icon">👤</div>
         <h3>Para mim</h3>
         <p>Encontre serviços de assistência alimentar e proteção social perto de você.</p>
       </button>
 
-      <button class="card" onclick="abrirFormulario('outro')" role="listitem" aria-label="Abrir Consulta para outra pessoa">
+      <button class="card" onclick="abrirFormulario('outro')" role="listitem" aria-label="Abrir formulário para outra pessoa">
         <div class="icon">🤝</div>
         <h3>Outra pessoa</h3>
-        <p>Encontre serviços de assistência alimentar e proteção social para ajudar alguém..</p>
+        <p>Encontre serviços para ajudar alguém que precisa do seu apoio.</p>
       </button>
     </div>
 
@@ -289,11 +289,11 @@
     formPage.classList.remove('hidden');
 
     if (persona === 'outro'){
-      formTitle.textContent = 'Tela Consulta de Equipamentos';
+      formTitle.textContent = 'Formulário — Outra pessoa';
       secAmigoProf.classList.remove('hidden');
       pessoaTitle.textContent = 'Caso deseje, fale mais sobre quem você está ajudando';
     } else {
-      formTitle.textContent = 'Tela Consulta de Equipamentos';
+      formTitle.textContent = 'Formulário — Para mim';
       secAmigoProf.classList.add('hidden');
       pessoaTitle.textContent = 'Caso deseje, fale mais sobre você';
       document.querySelectorAll('input[name="papel"]').forEach(r=>r.checked=false);
@@ -372,16 +372,7 @@ Para receber orientações, procure o CRAS mais próximo.`;
         renderResultado({ tipo:'C', texto:mensagemCad, rua });
       } else {
         // D — não localizado
-        mensagemCad = '“Você ainda não está no CadÚnico, mas pode buscar apoio.
-Por meio do CadÚnico você pode acessar serviços como:
-
-Bolsa Família
-
-Mães de PE
-
-Benefícios sociais
-
-Cozinhas Comunitárias.”.';
+        mensagemCad = 'Você ainda não está no CadÚnico, mas pode buscar apoio.';
         renderResultado({ tipo:'D', texto:mensagemCad, rua });
       }
     } else {
