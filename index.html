@@ -289,11 +289,11 @@
     formPage.classList.remove('hidden');
 
     if (persona === 'outro'){
-      formTitle.textContent = 'Formulário — Outra pessoa';
+      formTitle.textContent = 'Tela Consulta de Equipamentos';
       secAmigoProf.classList.remove('hidden');
       pessoaTitle.textContent = 'Caso deseje, fale mais sobre quem você está ajudando';
     } else {
-      formTitle.textContent = 'Formulário — Para mim';
+      formTitle.textContent = 'Tela Consulta de Equipamentos';
       secAmigoProf.classList.add('hidden');
       pessoaTitle.textContent = 'Caso deseje, fale mais sobre você';
       document.querySelectorAll('input[name="papel"]').forEach(r=>r.checked=false);
@@ -372,7 +372,16 @@ Para receber orientações, procure o CRAS mais próximo.`;
         renderResultado({ tipo:'C', texto:mensagemCad, rua });
       } else {
         // D — não localizado
-        mensagemCad = 'Você ainda não está no CadÚnico, mas pode buscar apoio.';
+        mensagemCad = '“Você ainda não está no CadÚnico, mas pode buscar apoio.
+Por meio do CadÚnico você pode acessar serviços como:
+
+Bolsa Família
+
+Mães de PE
+
+Benefícios sociais
+
+Cozinhas Comunitárias.”.';
         renderResultado({ tipo:'D', texto:mensagemCad, rua });
       }
     } else {
@@ -440,5 +449,6 @@ Para receber orientações, procure o CRAS mais próximo.`;
 </script>
 </body>
 </html>
+
 
 
