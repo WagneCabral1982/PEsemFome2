@@ -135,7 +135,7 @@
       <h3><span class="chip chip-req">Obrigatório</span> Localização</h3>
       <div class="row">
         <div class="col-6">
-          <label for="municipio">Município</label>
+          <label for="municipio">Município <span class="hint">(Obrigatório)</span></label>
           <select id="municipio" required>
             <option value="">Selecione</option>
             <option value="recife">Recife</option>
@@ -147,7 +147,7 @@
           </select>
         </div>
         <div class="col-6">
-          <label for="bairro">Bairro</label>
+          <label for="bairro">Bairro <span class="hint">(Obrigatório)</span></label>
           <select id="bairro" required disabled>
             <option value="">Primeiro selecione um município</option>
           </select>
@@ -163,7 +163,7 @@
 
       <div class="row" style="margin-top:8px">
         <div class="col-12">
-          <label>Situação de Rua</label>
+          <label>Situação de Rua <span class="hint">(Obrigatório)</span></label>
           <div class="radio-line">
             <label><input type="radio" name="rua" value="sim"> Sim</label>
             <label><input type="radio" name="rua" value="nao" checked> Não</label>
@@ -450,6 +450,7 @@ Para receber orientações, procure o CRAS mais próximo.`;
 </script>
 </body>
 </html>
+
 
 
 
