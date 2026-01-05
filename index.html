@@ -3,453 +3,359 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>PE sem Fome – Protótipo com Regras C/D/E + NIS de exemplo</title>
+<title>PE sem Fome – Portal de Assistência Alimentar</title>
 <style>
-  :root{
-    --blue:#003f9e; --blue-2:#0b58d0; --text:#1f2937; --muted:#6b7280;
-    --ok:#198754; --warn:#f59e0b; --danger:#dc3545; --card:#fff; --bg:#f3f4f6; --border:#e5e7eb;
+  :root {
+    --blue: #003f9e; --blue-2: #0b58d0; --text: #1f2937; --muted: #6b7280;
+    --ok: #198754; --warn: #f59e0b; --danger: #dc3545; --card: #fff; --bg: #f3f4f6; --border: #e5e7eb;
+    --focus: #3b82f6;
   }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-  a{color:#0ea5e9;text-decoration:none}
-  a:hover{text-decoration:underline}
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, sans-serif; }
+  
+  /* Utilitários */
+  .hidden { display: none !important; }
+  .error-field { border-color: var(--danger) !important; outline: 1px solid var(--danger); }
+  
+  /* Hero */
+  .hero { background: var(--blue); color: #fff; padding: 60px 20px; text-align: center; }
+  .hero .wrap { max-width: 1100px; margin: 0 auto; }
+  .hero h1 { font-size: clamp(28px, 5vw, 42px); margin: 0 0 15px; font-weight: 800; }
+  .hero p { max-width: 800px; margin: 0 auto 32px; font-size: 1.1rem; opacity: 0.9; }
+  
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .card { 
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); 
+    border-radius: 18px; padding: 32px; cursor: pointer; transition: 0.3s; color: #fff;
+    display: flex; flex-direction: column; align-items: center; text-decoration: none;
+  }
+  .card:hover, .card:focus { background: rgba(255,255,255,0.2); transform: translateY(-5px); outline: 3px solid var(--focus); }
+  .icon { font-size: 48px; margin-bottom: 15px; }
+  .card h3 { margin: 10px 0; font-size: 24px; }
 
-  /* HERO (tela inicial) */
-  .hero{background:var(--blue); color:#fff; padding:48px 20px}
-  .hero .wrap{max-width:1100px;margin:0 auto}
-  .hero h1{font-size:clamp(26px,4vw,36px);margin:0 0 10px}
-  .hero p{max-width:960px;margin:0 0 24px;opacity:.95}
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:20px}
-  .card{background:#0b47b7; border:1px solid rgba(255,255,255,.2); border-radius:18px; padding:28px; text-align:center; cursor:pointer; transition:.2s}
-  .card:hover{transform:translateY(-3px); background:#0d51cc}
-  .icon{width:86px;height:86px;border-radius:50%;display:grid;place-items:center;margin:4px auto 14px; background:#fff1; border:2px solid #fff3; font-size:36px}
-  .card h3{margin:8px 0 10px; font-size:22px; color:#fff}
-  .card p{margin:0; color:#dbeafe}
-  .hero .help{margin-top:28px; text-align:center; opacity:.9}
+  /* Layout de Página */
+  .page { max-width: 900px; margin: -40px auto 50px; background: var(--card); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); overflow: hidden; }
+  header { padding: 24px; border-bottom: 1px solid var(--border); background: #fff; }
+  .content { padding: 24px; }
 
-  /* Page shells */
-  .page{max-width:980px;margin:-24px auto 40px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-  .page header{padding:18px 22px;border-bottom:1px solid var(--border);background:#fff}
-  .page header h2{margin:0;font-size:20px}
-  .content{padding:18px 22px}
-  .hidden{display:none!important}
+  /* Elementos de Formuário */
+  fieldset { border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; background: #fff; }
+  legend { font-weight: 700; padding: 0 10px; color: var(--blue); display: flex; align-items: center; gap: 8px; }
+  .chip { font-size: 11px; text-transform: uppercase; border-radius: 4px; padding: 2px 8px; }
+  .chip-req { background: var(--danger); color: #fff; }
+  .chip-opt { background: #eee; color: #666; }
 
-  /* Form sections */
-  .section{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:18px;background:#fff}
-  .section h3{margin:0 0 12px;font-size:16px;display:flex;gap:10px;align-items:center}
-  .chip{font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;line-height:1}
-  .chip-req{background:var(--ok);color:#fff}
-  .chip-opt{background:#e5f0ff;color:#064eaa;border:1px solid #cfe3ff}
-  .row{display:grid;grid-template-columns:repeat(12,1fr); gap:14px}
-  .col-6{grid-column:span 6} .col-12{grid-column:span 12}
-  label{font-weight:600;display:block;margin:6px 0}
-  .hint{font-size:12px;color:var(--muted);margin-left:8px}
-  input,select,button{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#fff}
-  input:focus,select:focus{outline:3px solid #bfdbfe;border-color:#93c5fd}
-  .radio-line{display:flex;gap:18px;align-items:center}
-  .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
-  .btn{border:0;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer}
-  .btn-blue{background:var(--blue-2);color:#fff}
-  .btn-gray{background:#e5e7eb}
-  .btn-lite{background:#f1f5f9}
-  .location-tools{display:flex;gap:10px;flex-wrap:wrap}
+  .row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+  .col-6 { grid-column: span 6; } .col-12 { grid-column: span 12; }
+  label { font-weight: 600; display: block; margin-bottom: 6px; font-size: 14px; }
+  .hint { font-size: 12px; color: var(--muted); display: block; margin-top: 4px; }
+  
+  input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; transition: 0.2s; }
+  input:focus { border-color: var(--blue-2); outline: none; box-shadow: 0 0 0 3px rgba(11, 88, 208, 0.1); }
+  
+  .radio-group { display: flex; gap: 20px; padding: 10px 0; }
+  .radio-group label { display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; }
+  .radio-group input { width: auto; }
+
+  .btns { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+  .btn { padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; font-size: 15px; }
+  .btn-blue { background: var(--blue-2); color: #fff; }
+  .btn-blue:hover { background: var(--blue); }
+  .btn-gray { background: #e5e7eb; color: var(--text); }
+  .btn-lite { background: #f8fafc; border: 1px solid var(--border); width: auto; padding: 8px 12px; font-size: 12px; }
 
   /* Resultados */
-  .banner{border-radius:12px;padding:16px;margin-bottom:16px}
-  .banner-ok{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
-  .banner-warn{background:#fff3cd;color:#856404;border:1px solid #ffeeba}
-  .equip-card{border:1px solid var(--border);border-radius:12px;padding:14px;margin:10px 0;border-left:6px solid}
-  .tipo-centro-pop{border-left-color:#dc3545}
-  .tipo-creas{border-left-color:#f59e0b}
-  .tipo-posto{border-left-color:#6f42c1}
-  .tipo-cras{border-left-color:#198754}
-  .tipo-cozinha{border-left-color:#0b58d0}
-  .equip-head{display:flex;justify-content:space-between;gap:14px}
-  .equip-name{font-weight:800}
-  .muted{color:#6b7280}
-  @media (max-width:800px){.col-6{grid-column:span 12}}
+  .banner { border-radius: 12px; padding: 20px; margin-bottom: 20px; line-height: 1.6; }
+  .banner-ok { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+  .banner-warn { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+  
+  .equip-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; border-left: 6px solid #ccc; transition: 0.2s; }
+  .equip-card:hover { border-color: var(--blue-2); }
+  .tipo-centro-pop { border-left-color: var(--danger); }
+  .tipo-creas { border-left-color: var(--warn); }
+  .tipo-cras { border-left-color: var(--ok); }
+  .tipo-cozinha { border-left-color: var(--blue-2); }
+  
+  @media (max-width: 600px) { .col-6 { grid-column: span 12; } .btns { flex-direction: column; } }
 </style>
 </head>
 <body>
 
-<!-- ====== TELA INICIAL ====== -->
-<section class="hero" id="home">
-  <div class="wrap">
-    <h1>Bem-vindo ao PE Sem Fome</h1>
-    <p>Neste portal você pode consultar serviços de assistência alimentar e proteção social que podem direcionar você ou alguém em situação de insegurança alimentar e nutricional para serviços que ajudem a superar essa situação.</p>
-    <h2 style="margin:0 0 12px;font-size:22px;font-weight:700">Selecione para quem a ajuda está destinada</h2>
+<main>
+  <!-- TELA INICIAL -->
+  <section class="hero" id="home">
+    <div class="wrap">
+      <h1>PE Sem Fome</h1>
+      <p>Localize unidades de acolhimento, cozinhas comunitárias e serviços de proteção social no Estado de Pernambuco.</p>
+      
+      <div class="cards">
+        <button class="card" onclick="App.abrirFormulario('mim')">
+          <span class="icon" aria-hidden="true">👤</span>
+          <h3>Para mim</h3>
+          <p>Encontre ajuda para você ou sua família.</p>
+        </button>
 
-    <div class="cards" role="list">
-      <button class="card" onclick="abrirFormulario('mim')" role="listitem" aria-label="Abrir formulário para mim">
-        <div class="icon">👤</div>
-        <h3>Para mim</h3>
-        <p>Encontre serviços de assistência alimentar e proteção social perto de você.</p>
-      </button>
-
-      <button class="card" onclick="abrirFormulario('outro')" role="listitem" aria-label="Abrir formulário para outra pessoa">
-        <div class="icon">🤝</div>
-        <h3>Outra pessoa</h3>
-        <p>Encontre serviços para ajudar alguém que precisa do seu apoio.</p>
-      </button>
-    </div>
-
-    <div class="help">Precisa de ajuda? <a href="#">Fale conosco</a></div>
-  </div>
-</section>
-
-<!-- ====== FORMULÁRIO ====== -->
-<section id="form-page" class="page hidden" aria-live="polite">
-  <header><h2 id="form-title">Formulário</h2></header>
-  <div class="content">
-
-    <!-- Amigo ou Profissional (apenas OUTRA PESSOA) -->
-    <div id="sec-amigo-prof" class="section hidden">
-      <h3><span class="chip chip-req">Obrigatório</span> Amigo ou Profissional</h3>
-      <div class="radio-line" role="radiogroup" aria-label="Selecione o seu papel">
-        <label><input type="radio" name="papel" value="amigo"> Cidadão Amigo</label>
-        <label><input type="radio" name="papel" value="profissional"> Profissional</label>
+        <button class="card" onclick="App.abrirFormulario('outro')">
+          <span class="icon" aria-hidden="true">🤝</span>
+          <h3>Outra pessoa</h3>
+          <p>Ajude alguém em situação de vulnerabilidade.</p>
+        </button>
       </div>
     </div>
+  </section>
 
-    <!-- Identificação (opcional) -->
-    <div class="section">
-      <h3><span class="chip chip-opt">Opcional</span> Identificação</h3>
-      <div class="row">
-        <div class="col-6">
-          <label for="cpf">CPF <span class="hint">(Opcional)</span></label>
-          <input id="cpf" inputmode="numeric" maxlength="11" placeholder="Digite o CPF (apenas números)">
+  <!-- FORMULÁRIO -->
+  <section id="form-page" class="page hidden">
+    <header><h2 id="form-title">Identificação</h2></header>
+    <form class="content" id="main-form" onsubmit="event.preventDefault()">
+      
+      <!-- Perfil (Apenas para "Outra Pessoa") -->
+      <fieldset id="sec-amigo-prof" class="hidden">
+        <legend><span class="chip chip-req">Obrigatório</span> Seu papel</legend>
+        <div class="radio-group">
+          <label><input type="radio" name="papel" value="amigo"> Cidadão Amigo</label>
+          <label><input type="radio" name="papel" value="profissional"> Profissional de Saúde/Social</label>
         </div>
-        <div class="col-6">
-          <label for="nis">NIS <span class="hint">(Opcional)</span></label>
-          <div style="display:flex;gap:8px">
-            <input id="nis" inputmode="numeric" maxlength="11" placeholder="Digite o NIS (apenas números)">
-            <button class="btn btn-lite" type="button" id="btn-nis-demo" title="Preencher com NIS de exemplo">Usar NIS de exemplo</button>
+      </fieldset>
+
+      <!-- Identificação -->
+      <fieldset>
+        <legend><span class="chip chip-opt">Opcional</span> Documentação</legend>
+        <div class="row">
+          <div class="col-6">
+            <label for="cpf">CPF</label>
+            <input id="cpf" type="text" inputmode="numeric" placeholder="000.000.000-00">
           </div>
-          <small class="hint">NIS de exemplo para testes do protótipo.</small>
-        </div>
-      </div>
-    </div>
-
-    <!-- Localização (obrigatório) -->
-    <div class="section">
-      <h3><span class="chip chip-req">Obrigatório</span> Localização</h3>
-      <div class="row">
-        <div class="col-6">
-          <label for="municipio">Município <span class="hint">(Obrigatório)</span></label>
-          <select id="municipio" required>
-            <option value="">Selecione</option>
-            <option value="recife">Recife</option>
-            <option value="olinda">Olinda</option>
-            <option value="jaboatao">Jaboatão dos Guararapes</option>
-            <option value="paulista">Paulista</option>
-            <option value="caruaru">Caruaru</option>
-            <option value="petrolina">Petrolina</option>
-          </select>
-        </div>
-        <div class="col-6">
-          <label for="bairro">Bairro <span class="hint">(Obrigatório)</span></label>
-          <select id="bairro" required disabled>
-            <option value="">Primeiro selecione um município</option>
-          </select>
-        </div>
-        <div class="col-12">
-          <div class="location-tools">
-            <button type="button" class="btn btn-blue" id="btn-geo">📍 Usar minha localização</button>
-            <button type="button" class="btn btn-gray" id="btn-clear">Limpar localização</button>
-          </div>
-          <small id="geo-status" class="hint"></small>
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:8px">
-        <div class="col-12">
-          <label>Situação de Rua <span class="hint">(Obrigatório)</span></label>
-          <div class="radio-line">
-            <label><input type="radio" name="rua" value="sim"> Sim</label>
-            <label><input type="radio" name="rua" value="nao" checked> Não</label>
+          <div class="col-6">
+            <label for="nis">NIS</label>
+            <div style="display:flex; gap:8px">
+              <input id="nis" type="text" inputmode="numeric" placeholder="000.00000.00-0">
+              <button class="btn btn-lite" type="button" onclick="App.preencherDemo()">Demo</button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+        <small class="hint">A identificação ajuda a verificar benefícios ativos no CadÚnico.</small>
+      </fieldset>
 
-    <!-- Dados Pessoais (opcional) -->
-    <div class="section">
-      <h3><span class="chip chip-opt">Opcional</span> <span id="pessoaTitle">Caso deseje, fale mais sobre você</span></h3>
-      <div class="row">
-        <div class="col-6">
-          <label for="nome">Nome completo <span class="hint">(Opcional)</span></label>
-          <input id="nome" placeholder="Seu nome completo...">
-        </div>
-        <div class="col-6">
-          <label for="social">Nome social (se houver) <span class="hint">(Opcional)</span></label>
-          <input id="social" placeholder="Nome social...">
-        </div>
-        <div class="col-6">
-          <label for="genero">Gênero <span class="hint">(Opcional)</span></label>
-          <select id="genero">
-            <option value="">Selecione</option><option>Masculino</option><option>Feminino</option>
-            <option>Não-binário</option><option>Outro</option>
-          </select>
-        </div>
-        <div class="col-6">
-          <label for="nasc">Data de nascimento <span class="hint">(Opcional)</span></label>
-          <input id="nasc" type="date">
-        </div>
-        <div class="row" style="margin-top:8px">
-        <div class="col-12">
-          <label>Você é brasileiro(a)?</label>
-          <div class="radio-line">
-            <label><input type="radio" name="Você é brasileiro(a)?" value="sim"> Sim</label>
-            <label><input type="radio" name="Você é brasileiro(a)?" value="nao" checked> Não</label>
+      <!-- Localização -->
+      <fieldset>
+        <legend><span class="chip chip-req">Obrigatório</span> Localização</legend>
+        <div class="row">
+          <div class="col-6">
+            <label for="municipio">Município</label>
+            <select id="municipio" required>
+              <option value="">Selecione...</option>
+              <option value="recife">Recife</option>
+              <option value="olinda">Olinda</option>
+              <option value="jaboatao">Jaboatão dos Guararapes</option>
+              <option value="caruaru">Caruaru</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label for="bairro">Bairro</label>
+            <select id="bairro" required disabled>
+              <option value="">Selecione o município primeiro</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <button type="button" class="btn btn-lite" onclick="App.geolocalizar()">📍 Usar minha localização atual</button>
+            <span id="geo-status" class="hint"></span>
           </div>
         </div>
-      </div>
-    </div>
-        <div class="col-12">
-          <label for="endereco">Endereço <span class="hint">(Opcional)</span></label>
-          <input id="endereco" placeholder="Seu endereço completo">
+        <hr style="margin:20px 0; border:0; border-top:1px solid #eee">
+        <label>A pessoa está em situação de rua?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="rua" value="sim"> Sim</label>
+          <label><input type="radio" name="rua" value="nao" checked> Não</label>
         </div>
+      </fieldset>
+
+      <!-- Adicional -->
+      <fieldset>
+        <legend><span class="chip chip-opt">Opcional</span> Dados Complementares</legend>
+        <div class="row">
+          <div class="col-12">
+            <label for="nome" id="label-nome">Nome completo</label>
+            <input id="nome" placeholder="Digite o nome...">
+          </div>
+          <div class="col-6">
+            <label for="genero">Gênero</label>
+            <select id="genero">
+              <option value="">Selecione</option>
+              <option>Masculino</option>
+              <option>Feminino</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label>Nacionalidade Brasileira?</label>
+            <div class="radio-group">
+              <label><input type="radio" name="nacionalidade" value="sim" checked> Sim</label>
+              <label><input type="radio" name="nacionalidade" value="nao"> Não</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="btns">
+        <button class="btn btn-gray" type="button" onclick="App.navegar('home')">Cancelar</button>
+        <button class="btn btn-blue" type="button" onclick="App.concluir()">Ver Serviços Disponíveis</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- RESULTADO -->
+  <section id="resultado-page" class="page hidden">
+    <header><h2>Serviços Encontrados</h2></header>
+    <div class="content">
+      <div id="cadunico-box" class="banner hidden"></div>
+      <div id="lista-equip"></div>
+      
+      <div class="btns">
+        <button class="btn btn-gray" type="button" onclick="App.navegar('form')">Voltar e Ajustar</button>
+        <button class="btn btn-blue" type="button" onclick="location.reload()">Nova Consulta</button>
       </div>
     </div>
-
-    <div class="btns">
-      <button class="btn btn-gray" type="button" onclick="voltarHome()">Fechar</button>
-      <button class="btn btn-blue" type="button" onclick="validarEEnviar()">Concluir</button>
-    </div>
-  </div>
-</section>
-
-<!-- ====== RESULTADO DA CONSULTA ====== -->
-<section id="resultado-page" class="page hidden" aria-live="polite">
-  <header><h2>Resultado da Consulta</h2></header>
-  <div class="content" id="resultado-content">
-
-    <!-- Seção CadÚnico -->
-    <div id="cadunico-box" class="banner hidden"></div>
-
-    <!-- Lista de Equipamentos -->
-    <div id="lista-equip"></div>
-
-    <div class="btns">
-      <button class="btn btn-gray" type="button" onclick="voltarForm()">Voltar</button>
-      <button class="btn btn-blue" type="button" onclick="voltarHome()">Concluir</button>
-    </div>
-  </div>
-</section>
+  </section>
+</main>
 
 <script>
-  // ------- Bairros (exemplo) -------
-  const bairrosPorMunicipio = {
-    recife:['Boa Viagem','Boa Vista','Casa Amarela','Derby','Espinheiro','Várzea'],
-    olinda:['Bairro Novo','Carmo','Jardim Brasil','Peixinhos','Rio Doce'],
-    jaboatao:['Barra de Jangada','Candeias','Cavaleiro','Prazeres'],
-    paulista:['Arthur Lundgren I','Jardim Paulista','Maranguape I','Paratibe'],
-    caruaru:['Centro','Divinópolis','Indianópolis','Rendeiras','Salgado'],
-    petrolina:['Centro','Jardim Amazonas','Jardim São Paulo','Palhinhas']
+/** 
+ * App Module - PE Sem Fome
+ */
+const App = (() => {
+  const state = { persona: 'mim' };
+
+  const db = {
+    bairros: {
+      recife: ['Boa Viagem', 'Boa Vista', 'Casa Amarela', 'Várzea'],
+      olinda: ['Bairro Novo', 'Rio Doce', 'Peixinhos'],
+      jaboatao: ['Prazeres', 'Candeias', 'Cavaleiro']
+    },
+    equipamentos: {
+      'centro-pop': { tipo: 'Centro POP', css: 'tipo-centro-pop', itens: [{ nome: 'Centro POP Especializado', end: 'Rua Principal, 100', tel: '(81) 3333-1111' }] },
+      'cras': { tipo: 'CRAS', css: 'tipo-cras', itens: [{ nome: 'CRAS Unidade Local', end: 'Av. das Comunidades, 50', tel: '(81) 3333-2222' }] },
+      'cozinha': { tipo: 'Cozinha Comunitária', css: 'tipo-cozinha', itens: [{ nome: 'Cozinha Solidária PE', end: 'Rua da Esperança, 12', tel: '(81) 98888-0000' }] }
+    }
   };
 
-  // ------- Base de equipamentos (mock) -------
-  const baseEquip = {
-    'centro-pop': {tipo:'Centro POP', css:'tipo-centro-pop', itens:[
-      {nome:'Centro POP – Centro', dist:0.9, endereco:'Rua da Aurora, 123', contato:'(81) 3333-4444'}
-    ]},
-    'creas': {tipo:'CREAS', css:'tipo-creas', itens:[
-      {nome:'CREAS – Afogados', dist:1.2, endereco:'Rua 21 de Abril, 1092', contato:'(81) 3355-3671'}
-    ]},
-    'posto': {tipo:'Posto de Atendimento do CadÚnico', css:'tipo-posto', itens:[
-      {nome:'Posto – Boa Vista', dist:1.0, endereco:'Av. Conde da Boa Vista, 123', contato:'(81) 3222-1234'}
-    ]},
-    'cras': {tipo:'CRAS', css:'tipo-cras', itens:[
-      {nome:'CRAS – Bongi', dist:1.7, endereco:'Av. Gen. San Martin, 1083', contato:'(81) 3225-9440'}
-    ]},
-    'cozinha': {tipo:'Cozinha Comunitária', css:'tipo-cozinha', itens:[
-      {nome:'Cozinha – Gurupé', dist:2.3, endereco:'Rua Gurupé, 253', contato:'(81) 99362-9916'}
-    ]}
+  // Selectors
+  const $ = (id) => document.getElementById(id);
+  const pages = { home: $('home'), form: $('form-page'), result: $('resultado-page') };
+
+  // Máscaras de Input
+  const mask = (val, pattern) => {
+    let i = 0;
+    const v = val.replace(/\D/g, '');
+    return pattern.replace(/#/g, () => v[i++] || '');
   };
 
-  // ------- Estado & refs -------
-  let persona = null;
-  const home = document.getElementById('home');
-  const formPage = document.getElementById('form-page');
-  const resultPage = document.getElementById('resultado-page');
-  const formTitle = document.getElementById('form-title');
-  const pessoaTitle = document.getElementById('pessoaTitle');
-  const secAmigoProf = document.getElementById('sec-amigo-prof');
+  const init = () => {
+    // Listeners de máscara
+    $('cpf').addEventListener('input', e => e.target.value = mask(e.target.value, '###.###.###-##'));
+    $('nis').addEventListener('input', e => e.target.value = mask(e.target.value, '###.#####.##-#'));
 
-  const municipio = document.getElementById('municipio');
-  const bairro = document.getElementById('bairro');
-  const btnGeo = document.getElementById('btn-geo');
-  const btnClear = document.getElementById('btn-clear');
-  const geoStatus = document.getElementById('geo-status');
-
-  const cpf = document.getElementById('cpf');
-  const nis = document.getElementById('nis');
-  const genero = document.getElementById('genero');
-
-  const btnNisDemo = document.getElementById('btn-nis-demo');
-
-  const cadunicoBox = document.getElementById('cadunico-box');
-  const listaEquip = document.getElementById('lista-equip');
-
-  // ------- Navegação -------
-  function abrirFormulario(tipo){
-    persona = tipo; // 'mim' | 'outro'
-    home.classList.add('hidden');
-    resultPage.classList.add('hidden');
-    formPage.classList.remove('hidden');
-
-    if (persona === 'outro'){
-      formTitle.textContent = 'Formulário — Outra pessoa';
-      secAmigoProf.classList.remove('hidden');
-      pessoaTitle.textContent = 'Caso deseje, fale mais sobre quem você está ajudando';
-    } else {
-      formTitle.textContent = 'Formulário — Para mim';
-      secAmigoProf.classList.add('hidden');
-      pessoaTitle.textContent = 'Caso deseje, fale mais sobre você';
-      document.querySelectorAll('input[name="papel"]').forEach(r=>r.checked=false);
-    }
-  }
-  function voltarHome(){ formPage.classList.add('hidden'); resultPage.classList.add('hidden'); home.classList.remove('hidden'); }
-  function voltarForm(){ resultPage.classList.add('hidden'); formPage.classList.remove('hidden'); }
-
-  // ------- Bairros por município -------
-  municipio.addEventListener('change', ()=>{
-    bairro.innerHTML = '';
-    const m = municipio.value;
-    if (m && bairrosPorMunicipio[m]){
-      bairro.disabled = false;
-      bairro.append(new Option('Selecione um bairro',''));
-      bairrosPorMunicipio[m].forEach(b => bairro.append(new Option(b, b)));
-    } else {
-      bairro.disabled = true;
-      bairro.append(new Option('Primeiro selecione um município',''));
-    }
-  });
-
-  // ------- Geolocalização (simulada) -------
-  btnGeo.addEventListener('click', ()=>{
-    geoStatus.textContent = 'Obtendo localização...';
-    if(!navigator.geolocation){ geoStatus.textContent = 'Geolocalização não suportada.'; return; }
-    navigator.geolocation.getCurrentPosition(()=>{
-      municipio.value='recife'; municipio.dispatchEvent(new Event('change'));
-      setTimeout(()=>{ bairro.value='Boa Viagem'; geoStatus.textContent='Localização detectada: Recife / Boa Viagem (simulado).'; }, 120);
-    }, ()=> geoStatus.textContent='Não foi possível obter sua localização.');
-  });
-  btnClear.addEventListener('click', ()=>{
-    municipio.value=''; municipio.dispatchEvent(new Event('change')); geoStatus.textContent='';
-  });
-
-  // ------- NIS de exemplo (da imagem) -------
-  btnNisDemo.addEventListener('click', ()=>{
-    nis.value = '16860460980'; // 1.686.046.098-0 sem pontuação
-    nis.dispatchEvent(new Event('input'));
-  });
-
-  // ------- Botão Concluir: valida + simula consulta + monta resultado -------
-  function validarEEnviar(){
-    const erros = [];
-    if(!municipio.value || !bairro.value) erros.push('Localização (Município e Bairro)');
-    const rua = document.querySelector('input[name="rua"]:checked')?.value;
-    if(!rua) erros.push('Situação de Rua');
-    if(persona==='outro' && !document.querySelector('input[name="papel"]:checked')) erros.push('Amigo ou Profissional');
-
-    if(erros.length){ alert('Por favor, preencha: ' + erros.join(', ') + '.'); return; }
-
-    // Se informou CPF/NIS, simulamos a consulta para decidir C/D.
-    const temId = !!(cpf.value.trim() || nis.value.trim());
-    let localizado = false;
-    let mensagemCad = '';
-
-    if (temId){
-      const seed = (cpf.value + '|' + nis.value).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-      localizado = (seed % 2) === 0; // 50/50 para demo
-
-      if (localizado){
-        // C — localizado no CadÚnico
-        const mulher = (genero.value || '').toLowerCase().includes('fem');
-        const linhaMae = mulher
-          ? '• (Se mulher) <a href="https://www.maesdepernambuco.pe.gov.br" target="_blank" rel="noopener">Mães de Pernambuco (www.maesdepernambuco.pe.gov.br)</a>'
-          : '• (Se mulher) Mães de Pernambuco (www.maesdepernambuco.pe.gov.br)';
-
-        mensagemCad =
-`Você está no CadÚnico e pode ter direito aos seguintes serviços:
-• Bolsa Família
-${linhaMae}
-• Benefícios Eventuais
-• Cozinhas Comunitárias
-
-Para receber orientações, procure o CRAS mais próximo.`;
-        renderResultado({ tipo:'C', texto:mensagemCad, rua });
+    // Dependência Município -> Bairro
+    $('municipio').addEventListener('change', (e) => {
+      const bSelect = $('bairro');
+      bSelect.innerHTML = '<option value="">Selecione um bairro</option>';
+      if (e.target.value) {
+        bSelect.disabled = false;
+        db.bairros[e.target.value].forEach(b => bSelect.add(new Option(b, b)));
       } else {
-        // D — não localizado
-        mensagemCad = 'Você ainda não está no CadÚnico, mas pode buscar apoio.';
-        renderResultado({ tipo:'D', texto:mensagemCad, rua });
+        bSelect.disabled = true;
       }
-    } else {
-      // E — não informou CPF/NIS (seção CadÚnico vazia)
-      renderResultado({ tipo:'E', texto:'', rua });
-    }
-
-    formPage.classList.add('hidden');
-    resultPage.classList.remove('hidden');
-  }
-
-  // ------- Montagem da tela de resultados -------
-  function renderResultado({tipo, texto, rua}){
-    // Seção CadÚnico
-    if (tipo === 'C'){
-      cadunicoBox.className = 'banner banner-ok';
-      cadunicoBox.innerHTML = texto.replace(/\n/g,'<br/>');
-      cadunicoBox.classList.remove('hidden');
-    } else if (tipo === 'D'){
-      cadunicoBox.className = 'banner banner-warn';
-      cadunicoBox.textContent = texto;
-      cadunicoBox.classList.remove('hidden');
-    } else { // E
-      cadunicoBox.classList.add('hidden');
-      cadunicoBox.textContent = '';
-    }
-
-    // Lista de Equipamentos
-    listaEquip.innerHTML = '';
-    const ordem = (rua === 'sim')
-      ? ['centro-pop','creas','posto','cras','cozinha']  // Sequência A
-      : ['posto','cras','cozinha'];                      // Sequência B
-
-    ordem.forEach(key=>{
-      const grupo = baseEquip[key];
-      grupo.itens
-        .sort((a,b)=>a.dist-b.dist)
-        .forEach(item=>{
-          const c = document.createElement('div');
-          c.className = `equip-card ${grupo.css}`;
-          c.innerHTML = `
-            <div class="equip-head">
-              <div>
-                <div class="equip-name">${item.nome}</div>
-                <div class="muted">${grupo.tipo} • ${item.dist.toFixed(1)} km</div>
-              </div>
-              <div class="muted">${item.contato||''}</div>
-            </div>
-            <div class="muted">${item.endereco||''}</div>
-          `;
-          listaEquip.appendChild(c);
-        });
     });
-  }
+  };
 
-  // Expor ações
-  window.abrirFormulario = abrirFormulario;
-  window.validarEEnviar = validarEEnviar;
-  window.voltarHome = voltarHome;
-  window.voltarForm = voltarForm;
+  const navegar = (destino) => {
+    Object.values(pages).forEach(p => p.classList.add('hidden'));
+    pages[destino].classList.remove('hidden');
+    window.scrollTo(0,0);
+  };
 
-  // Normalizar CPF/NIS para dígitos
-  [document.getElementById('cpf'), document.getElementById('nis')].forEach(el =>
-    el.addEventListener('input', ()=> el.value = el.value.replace(/\D+/g,'')));
+  const abrirFormulario = (tipo) => {
+    state.persona = tipo;
+    $('sec-amigo-prof').classList.toggle('hidden', tipo === 'mim');
+    $('label-nome').textContent = tipo === 'mim' ? 'Seu nome completo' : 'Nome da pessoa que precisa de ajuda';
+    navegar('form');
+  };
+
+  const geolocalizar = () => {
+    const status = $('geo-status');
+    status.textContent = "Buscando...";
+    setTimeout(() => {
+      $('municipio').value = 'recife';
+      $('municipio').dispatchEvent(new Event('change'));
+      status.textContent = "Recife detectado com sucesso!";
+    }, 1000);
+  };
+
+  const concluir = () => {
+    // Validação Simples
+    let valid = true;
+    const reqs = [$('municipio'), $('bairro')];
+    reqs.forEach(el => {
+      if (!el.value) { el.classList.add('error-field'); valid = false; }
+      else { el.classList.remove('error-field'); }
+    });
+
+    if (!valid) return;
+
+    renderizarResultados();
+    navegar('result');
+  };
+
+  const renderizarResultados = () => {
+    const hasDoc = $('cpf').value || $('nis').value;
+    const isRua = document.querySelector('input[name="rua"]:checked').value === 'sim';
+    const cadBox = $('cadunico-box');
+    
+    // Regra C/D/E simplificada
+    if (hasDoc) {
+      const simuladoEncontrado = $('cpf').value.length === 14; // Simulação: CPF completo = achou
+      cadBox.className = simuladoEncontrado ? 'banner banner-ok' : 'banner banner-warn';
+      cadBox.innerHTML = simuladoEncontrado 
+        ? "<strong>Localizamos o cadastro!</strong><br>A pessoa possui perfil para o Programa Mães de Pernambuco e Cozinhas Comunitárias."
+        : "<strong>Cadastro não encontrado.</strong><br>Orientamos procurar o posto do CadÚnico mais próximo com documentos em mãos.";
+      cadBox.classList.remove('hidden');
+    } else {
+      cadBox.classList.add('hidden');
+    }
+
+    // Equipamentos
+    const lista = $('lista-equip');
+    lista.innerHTML = '<h3>Serviços próximos:</h3>';
+    
+    const ordem = isRua ? ['centro-pop', 'cozinha', 'cras'] : ['cras', 'cozinha'];
+    
+    ordem.forEach(key => {
+      const eqp = db.equipamentos[key];
+      eqp.itens.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `equip-card ${eqp.css}`;
+        div.innerHTML = `
+          <strong>${item.nome}</strong><br>
+          <small>${eqp.tipo}</small><br>
+          <p style="margin:8px 0 0; font-size:14px">${item.end}<br>Tel: ${item.tel}</p>
+        `;
+        lista.appendChild(div);
+      });
+    });
+  };
+
+  return {
+    init, abrirFormulario, navegar, preencherDemo: () => { 
+      $('nis').value = '168.60460.98-0';
+    }, geolocalizar, concluir
+  };
+})();
+
+document.addEventListener('DOMContentLoaded', App.init);
 </script>
 </body>
 </html>
+
 
 
 
